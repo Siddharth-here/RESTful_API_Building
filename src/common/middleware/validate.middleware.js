@@ -1,5 +1,6 @@
 import ApiError from "../utils/api-error.js";
 
+//custom validator
 const validate = (Dtoclass) => {
   return (req, res, next) => {
     const { error, value } = Dtoclass.validate(req.body);
