@@ -1,8 +1,20 @@
-class ApiError extends Error{
-  constructor(statusCode, message){
-    super(message)
-    this.statusCode=statusCode
+//error class for handling HTTP API responses
+
+class ApiError extends Error {
+  constructor(statusCode, message) {
+    super(message);
+    this.statusCode = statusCode;
+    this.isOperational = true //note this
+    Error.captureStackTrace(this, this.constructor)
+  }
+
+  static badRequest(message = "Bad Request"){
+    return new ApiError(400, message)
+  }
+
+  static unauthorized(message = "Unauthorized"){
+    return new ApiError(401, message)
   }
 }
 
-throw new ApiError("");
+export default ApiError
