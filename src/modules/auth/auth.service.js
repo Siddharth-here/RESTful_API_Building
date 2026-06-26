@@ -1,6 +1,8 @@
 import ApiError from "../../common/utils/api-error.js";
-import { generateAccessToken, generateResetToken } from "../../common/utils/jwt.utils.js";
+import { generateAccessToken, generateResetToken, verifyRefreshToken } from "../../common/utils/jwt.utils.js";
 import User from "./auth.model.js";
+
+const hashedToken = (token) => crypto.createHash("sha256").update(token).digest("hex");
 
 const register = async (name, email, password, role) => {
   const existing = await User.findOne({ email });
@@ -46,6 +48,29 @@ const login = async ({email, password}) => {
 
   const refreshToken= generateResetToken({id: user._id })
 
+  user.refreshToken = hashToken(refreshToken)
+  await user.save()
+
+  const userObj = user.toObject()
+  delete userObj.password
+  delete userObj.refreshToken
+
+  return {user: userObj, accessToken, refreshToken}
+
+}
+
+const refresh = async (token) => {
+  if(!token) throw ApiError.unauthorized("Refresh token missing")
+  //verify
+  const decoded = verifyRefreshToken(token)
+
+  const user = await User.findById(decoded.id).select("+refreshToken")
+  if(!user) throw ApiError.unauthorized("User not found")
+
+    if(user.refreshToken !== hashToken(token)){
+      throw ApiError.unauthorized("Invalid refresh token");
+      
+    }
 }
 
 export { register };
