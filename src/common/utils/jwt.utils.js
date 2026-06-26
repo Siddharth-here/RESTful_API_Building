@@ -17,6 +17,10 @@ const generateRefreshToken = (payload) => {
   });
 };
 
+const verifyRefreshToken = (token) => {
+  return jwt.verify(token, process.env.JWT_REFRESH_SECRET);
+};
+
 const generateResetToken = () => {
   const rawToken = crypto.randomBytes(32).toString("hex");
   const hashedToken = crypto
@@ -27,4 +31,10 @@ const generateResetToken = () => {
   return { rawToken, hashedToken };
 };
 
-export { generateResetToken };
+export {
+  generateResetToken,
+  verifyAccessToken,
+  verifyRefreshToken,
+  generateAccessToken,
+  generateRefreshToken,
+};
