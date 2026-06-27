@@ -105,7 +105,11 @@ const forgotPassword = async (email) => {
   const user = await User.findOne({email})
   if(!user) throw ApiError.notFound("User not found")
 
-    
+    const {rawToken, hashToken} = generateResetToken()
+    user.resetPasswordToken = hashedToken
+    user.resetPasswordExpires = Date.now() + 15 * 60 * 1000
+
+    await user.save()
 }
 
 export { register };
