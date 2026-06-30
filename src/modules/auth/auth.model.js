@@ -2,6 +2,7 @@
 
 import { boolean, required } from "joi";
 import mongoose from "mongoose";
+import bcrypt from "bcryptjs";
 
 const userSchema = new mongoose.Schema({
   name: {
@@ -50,5 +51,9 @@ const userSchema = new mongoose.Schema({
     select: false,
   }
 }, {timestamps: true});
+
+userSchema.pre('save', async function(candidatePassword) {
+  
+})
 
 export default mongoose.model("User", userSchema);
