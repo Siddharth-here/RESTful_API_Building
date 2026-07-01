@@ -16,11 +16,14 @@ const authenticate = async (req, res, next) => {
 
   if (!user) throw ApiError.unauthorized("user no longer exists");
 
+
+  //add a property 
   req.user = {
     id: user._id,
     role: user.role,
     name: user.name,
   };
+  next()
 };
 
 const authorize = (...roles) => {
