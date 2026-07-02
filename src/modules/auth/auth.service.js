@@ -1,3 +1,4 @@
+import { sendVerificationEmail } from "../../common/config/email.js";
 import ApiError from "../../common/utils/api-error.js";
 import {
   generateAccessToken,
@@ -26,6 +27,14 @@ const register = async (name, email, password, role) => {
   console.log(user);
 
   // TODO: send an email to user with token : rawtoken
+   try {
+    await sendVerificationEmail(email, token)
+    
+   } catch (error) {
+    console.error(error);
+    
+   }
+
 
   const userObj = user.toObject();
   delete userObj.password;
@@ -123,4 +132,17 @@ const getMe = async(userId) => {
   return user
 }
 
-export { register, login, refresh, logout, forgotPassword };
+const verifyEmail = async(token) =>{
+  const hashedToken = hashToken(token)
+
+  const user = await User.findOne({verificationToken: hashedToken}).select("+verificationToken")
+
+  if (!user) throw ApiError.unauthorized("User is not authorized")
+    
+  user.isVerified = true
+  user.verificationToken = undefined
+  await user.save();
+  return user
+}
+
+export { register, login, refresh, logout, forgotPassword, getMe, verifyEmail};
